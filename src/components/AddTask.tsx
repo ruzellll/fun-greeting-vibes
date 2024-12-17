@@ -23,18 +23,30 @@ export const AddTask = ({ onAdd }: AddTaskProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Add a new task..."
-        className="flex-1"
-      />
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Add a description (optional)..."
-        className="min-h-[80px]"
-      />
+      <div className="space-y-2">
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value.slice(0, 25))}
+          placeholder="Add a new task..."
+          className="flex-1"
+          maxLength={25}
+        />
+        <div className="text-right text-sm text-gray-500">
+          {title.length}/25 characters
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value.slice(0, 200))}
+          placeholder="Add a description (optional)..."
+          className="min-h-[80px]"
+          maxLength={200}
+        />
+        <div className="text-right text-sm text-gray-500">
+          {description.length}/200 characters
+        </div>
+      </div>
       <Button type="submit" className="w-full bg-primary hover:bg-secondary">
         <Plus className="h-4 w-4 mr-2" />
         Add Task
