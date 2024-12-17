@@ -48,19 +48,31 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
       </div>
       {isEditing ? (
         <div className="flex-1 flex flex-col gap-2">
-          <Input
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            className="flex-1"
-            autoFocus
-            placeholder="Task title..."
-          />
-          <Textarea
-            value={editedDescription}
-            onChange={(e) => setEditedDescription(e.target.value)}
-            placeholder="Add a description..."
-            className="min-h-[80px]"
-          />
+          <div className="space-y-2">
+            <Input
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value.slice(0, 25))}
+              className="flex-1"
+              autoFocus
+              placeholder="Task title..."
+              maxLength={25}
+            />
+            <div className="text-right text-sm text-gray-500">
+              {editedTitle.length}/25 characters
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Textarea
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value.slice(0, 200))}
+              placeholder="Add a description..."
+              className="min-h-[80px]"
+              maxLength={200}
+            />
+            <div className="text-right text-sm text-gray-500">
+              {editedDescription.length}/200 characters
+            </div>
+          </div>
           <div className="flex justify-end gap-2">
             <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
               Cancel
