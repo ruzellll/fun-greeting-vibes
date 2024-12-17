@@ -3,6 +3,7 @@ import { AddTask } from "@/components/AddTask";
 import { TaskList } from "@/components/TaskList";
 import { Clock } from "@/components/Clock";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Task {
   id: string;
@@ -14,77 +15,169 @@ interface Task {
 
 type FilterType = "all" | "completed" | "uncompleted";
 
+const API_URL = 'http://localhost:5000/api';
+
 const Index = () => {
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
+  const { toast } = useToast();
 
-  // Save tasks to localStorage whenever they change
+  // Fetch tasks from backend
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/tasks`);
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch tasks",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    fetchTasks();
+  }, []);
 
-  const handleAddTask = (title: string, description: string) => {
+  const handleAddTask = async (title: string, description: string) => {
     const newTask: Task = {
-      id: crypto.randomUUID(), // Generate a unique ID for each task
+      id: crypto.randomUUID(),
       title,
       description,
       completed: false,
       pinned: false
     };
-    setTasks(prevTasks => [...prevTasks, newTask]);
+
+    try {
+      const response = await fetch(`${API_URL}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (response.ok) {
+        await fetchTasks();
+        toast({
+          title: "Success",
+          description: "Task added successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add task",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await fetchTasks();
+        toast({
+          title: "Success",
+          description: "Task deleted successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete task",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditTask = (taskId: string, newTitle: string, newDescription: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === taskId 
-          ? { ...task, title: newTitle, description: newDescription }
-          : task
-      )
-    );
+  const handleEditTask = async (taskId: string, newTitle: string, newDescription: string) => {
+    const taskToUpdate = tasks.find(task => task.id === taskId);
+    if (!taskToUpdate) return;
+
+    const updatedTask = {
+      ...taskToUpdate,
+      title: newTitle,
+      description: newDescription,
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTask),
+      });
+
+      if (response.ok) {
+        await fetchTasks();
+        toast({
+          title: "Success",
+          description: "Task updated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update task",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleToggleTask = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, completed: !task.completed }
-          : task
-      )
-    );
+  const handleToggleTask = async (taskId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/tasks/${taskId}/toggle`, {
+        method: 'PUT',
+      });
+
+      if (response.ok) {
+        await fetchTasks();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to toggle task",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handlePinTask = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, pinned: !task.pinned }
-          : task
-      )
-    );
+  const handlePinTask = async (taskId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/tasks/${taskId}/pin`, {
+        method: 'PUT',
+      });
+
+      if (response.ok) {
+        await fetchTasks();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to pin task",
+        variant: "destructive",
+      });
+    }
   };
 
-  const sortTasks = (tasksToSort: Task[]) => {
-    return [...tasksToSort].sort((a, b) => {
-      if (a.pinned === b.pinned) return 0;
-      return a.pinned ? -1 : 1;
-    });
-  };
-
-  const filteredTasks = sortTasks(
-    tasks.filter((task) => {
+  const filteredTasks = tasks
+    .filter((task) => {
       if (filter === "completed") return task.completed;
       if (filter === "uncompleted") return !task.completed;
       return true;
     })
-  );
+    .sort((a, b) => {
+      if (a.pinned === b.pinned) return 0;
+      return a.pinned ? -1 : 1;
+    });
 
   return (
     <div className="min-h-screen bg-[#F6F8FA] py-8">
