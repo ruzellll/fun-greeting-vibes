@@ -21,7 +21,7 @@ const Index = () => {
   const [filter, setFilter] = useState<FilterType>("all");
   const { toast } = useToast();
 
-  const handleAddTask = (title: string, description: string) => {
+  const handleAddTask = async (title: string, description: string) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       title,
@@ -30,6 +30,24 @@ const Index = () => {
       pinned: false,
     };
 
+    try {
+      const response = await fetch('http://localhost:5000/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (!response.ok) {
+        throw new Error('Backend API unavailable');
+      }
+
+      await response.json();
+    } catch (error) {
+      console.log('Using localStorage fallback:', error);
+    }
+
     setTasks([...tasks, newTask]);
     toast({
       title: "Success",
@@ -37,7 +55,21 @@ const Index = () => {
     });
   };
 
-  const handleDeleteTask = (taskId: string) => {
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Backend API unavailable');
+      }
+
+      await response.json();
+    } catch (error) {
+      console.log('Using localStorage fallback:', error);
+    }
+
     setTasks(tasks.filter((task) => task.id !== taskId));
     toast({
       title: "Success",
@@ -45,11 +77,38 @@ const Index = () => {
     });
   };
 
-  const handleEditTask = (
+  const handleEditTask = async (
     taskId: string,
     newTitle: string,
     newDescription: string
   ) => {
+    const updatedTask = tasks.find(task => task.id === taskId);
+    if (!updatedTask) return;
+
+    const modifiedTask = {
+      ...updatedTask,
+      title: newTitle,
+      description: newDescription
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modifiedTask),
+      });
+
+      if (!response.ok) {
+        throw new Error('Backend API unavailable');
+      }
+
+      await response.json();
+    } catch (error) {
+      console.log('Using localStorage fallback:', error);
+    }
+
     setTasks(
       tasks.map((task) =>
         task.id === taskId
@@ -63,7 +122,33 @@ const Index = () => {
     });
   };
 
-  const handleToggleTask = (taskId: string) => {
+  const handleToggleTask = async (taskId: string) => {
+    const taskToToggle = tasks.find(task => task.id === taskId);
+    if (!taskToToggle) return;
+
+    const toggledTask = {
+      ...taskToToggle,
+      completed: !taskToToggle.completed
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(toggledTask),
+      });
+
+      if (!response.ok) {
+        throw new Error('Backend API unavailable');
+      }
+
+      await response.json();
+    } catch (error) {
+      console.log('Using localStorage fallback:', error);
+    }
+
     setTasks(
       tasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
@@ -71,7 +156,33 @@ const Index = () => {
     );
   };
 
-  const handlePinTask = (taskId: string) => {
+  const handlePinTask = async (taskId: string) => {
+    const taskToPin = tasks.find(task => task.id === taskId);
+    if (!taskToPin) return;
+
+    const pinnedTask = {
+      ...taskToPin,
+      pinned: !taskToPin.pinned
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pinnedTask),
+      });
+
+      if (!response.ok) {
+        throw new Error('Backend API unavailable');
+      }
+
+      await response.json();
+    } catch (error) {
+      console.log('Using localStorage fallback:', error);
+    }
+
     setTasks(
       tasks.map((task) =>
         task.id === taskId ? { ...task, pinned: !task.pinned } : task
