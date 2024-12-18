@@ -17,6 +17,22 @@ type FilterType = "all" | "completed" | "uncompleted";
 
 const API_URL = "http://localhost:5000/api";
 
+// Generate or retrieve device ID
+const getDeviceId = () => {
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem('deviceId', deviceId);
+  }
+  return deviceId;
+};
+
+// Headers with device ID
+const getHeaders = () => ({
+  'Content-Type': 'application/json',
+  'X-Device-ID': getDeviceId(),
+});
+
 const Index = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
@@ -25,7 +41,9 @@ const Index = () => {
   // Fetch tasks from backend
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${API_URL}/tasks`);
+      const response = await fetch(`${API_URL}/tasks`, {
+        headers: getHeaders(),
+      });
       const data = await response.json();
       setTasks(data);
     } catch (error) {
@@ -53,9 +71,7 @@ const Index = () => {
     try {
       const response = await fetch(`${API_URL}/tasks`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
         body: JSON.stringify(newTask),
       });
 
@@ -79,6 +95,7 @@ const Index = () => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
         method: "DELETE",
+        headers: getHeaders(),
       });
 
       if (response.ok) {
@@ -114,9 +131,7 @@ const Index = () => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getHeaders(),
         body: JSON.stringify(updatedTask),
       });
 
@@ -140,6 +155,7 @@ const Index = () => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}/toggle`, {
         method: "PUT",
+        headers: getHeaders(),
       });
 
       if (response.ok) {
@@ -158,6 +174,7 @@ const Index = () => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}/pin`, {
         method: "PUT",
+        headers: getHeaders(),
       });
 
       if (response.ok) {
