@@ -15,7 +15,7 @@ interface Task {
 
 type FilterType = "all" | "completed" | "uncompleted";
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = "http://localhost:5000/api";
 
 const Index = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -47,14 +47,14 @@ const Index = () => {
       title,
       description,
       completed: false,
-      pinned: false
+      pinned: false,
     };
 
     try {
       const response = await fetch(`${API_URL}/tasks`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newTask),
       });
@@ -78,7 +78,7 @@ const Index = () => {
   const handleDeleteTask = async (taskId: string) => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
@@ -97,8 +97,12 @@ const Index = () => {
     }
   };
 
-  const handleEditTask = async (taskId: string, newTitle: string, newDescription: string) => {
-    const taskToUpdate = tasks.find(task => task.id === taskId);
+  const handleEditTask = async (
+    taskId: string,
+    newTitle: string,
+    newDescription: string
+  ) => {
+    const taskToUpdate = tasks.find((task) => task.id === taskId);
     if (!taskToUpdate) return;
 
     const updatedTask = {
@@ -109,9 +113,9 @@ const Index = () => {
 
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedTask),
       });
@@ -135,7 +139,7 @@ const Index = () => {
   const handleToggleTask = async (taskId: string) => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}/toggle`, {
-        method: 'PUT',
+        method: "PUT",
       });
 
       if (response.ok) {
@@ -153,7 +157,7 @@ const Index = () => {
   const handlePinTask = async (taskId: string) => {
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}/pin`, {
-        method: 'PUT',
+        method: "PUT",
       });
 
       if (response.ok) {
@@ -185,25 +189,33 @@ const Index = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">My Tasks</h1>
-              <p className="text-gray-500">
-                Keep track of your daily tasks and stay organized.
-              </p>
+              <h1 className="text-3xl font-bold text-gray-900">Taskr~</h1>
+              <p className="text-gray-500">Organize. Prioritize.</p>
             </div>
             <Clock />
           </div>
-          
+
           <AddTask onAdd={handleAddTask} />
-          
+
           <div className="my-4">
-            <ToggleGroup type="single" value={filter} onValueChange={(value: FilterType) => setFilter(value || "all")}>
+            <ToggleGroup
+              type="single"
+              value={filter}
+              onValueChange={(value: FilterType) => setFilter(value || "all")}
+            >
               <ToggleGroupItem value="all" aria-label="Show all tasks">
                 All
               </ToggleGroupItem>
-              <ToggleGroupItem value="completed" aria-label="Show completed tasks">
+              <ToggleGroupItem
+                value="completed"
+                aria-label="Show completed tasks"
+              >
                 Completed
               </ToggleGroupItem>
-              <ToggleGroupItem value="uncompleted" aria-label="Show uncompleted tasks">
+              <ToggleGroupItem
+                value="uncompleted"
+                aria-label="Show uncompleted tasks"
+              >
                 Uncompleted
               </ToggleGroupItem>
             </ToggleGroup>

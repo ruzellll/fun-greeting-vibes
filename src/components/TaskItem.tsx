@@ -19,7 +19,13 @@ interface TaskItemProps {
   onPin: () => void;
 }
 
-export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemProps) => {
+export const TaskItem = ({
+  task,
+  onDelete,
+  onEdit,
+  onToggle,
+  onPin,
+}: TaskItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [editedDescription, setEditedDescription] = useState(task.description);
@@ -32,11 +38,11 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
   };
 
   return (
-    <div 
+    <div
       className={`task-item flex gap-4 bg-white p-4 rounded-lg shadow-sm transition-all ${
-        task.pinned 
-          ? 'border-2 border-yellow-400 shadow-md' 
-          : 'border border-gray-100'
+        task.pinned
+          ? "border-2 border-yellow-400 shadow-md"
+          : "border border-gray-100"
       } mb-3`}
     >
       <div className="flex items-start pt-1">
@@ -58,23 +64,29 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
               maxLength={25}
             />
             <div className="text-right text-sm text-gray-500">
-              {editedTitle.length}/25 characters
+              {editedTitle.length}/25
             </div>
           </div>
           <div className="space-y-2">
             <Textarea
               value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value.slice(0, 200))}
+              onChange={(e) =>
+                setEditedDescription(e.target.value.slice(0, 200))
+              }
               placeholder="Add a description..."
               className="min-h-[80px]"
               maxLength={200}
             />
             <div className="text-right text-sm text-gray-500">
-              {editedDescription.length}/200 characters
+              {editedDescription.length}/200
             </div>
           </div>
           <div className="flex justify-end gap-2">
-            <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
+            <Button
+              onClick={() => setIsEditing(false)}
+              variant="outline"
+              size="sm"
+            >
               Cancel
             </Button>
             <Button onClick={handleSubmit} size="sm">
@@ -85,7 +97,11 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
       ) : (
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <span className={`text-left ${task.completed ? "line-through text-gray-400" : ""}`}>
+            <span
+              className={`text-left ${
+                task.completed ? "line-through text-gray-400" : ""
+              }`}
+            >
               {task.title}
             </span>
             <div className="flex gap-2">
@@ -96,7 +112,9 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
                 }}
                 size="icon"
                 variant="ghost"
-                className={`text-gray-500 hover:text-yellow-500 ${task.pinned ? 'text-yellow-500' : ''}`}
+                className={`text-gray-500 hover:text-yellow-500 ${
+                  task.pinned ? "text-yellow-500" : ""
+                }`}
               >
                 <Pin className="h-4 w-4" />
               </Button>
@@ -119,7 +137,11 @@ export const TaskItem = ({ task, onDelete, onEdit, onToggle, onPin }: TaskItemPr
             </div>
           </div>
           {task.description && (
-            <p className={`mt-2 text-sm text-gray-500 text-left ${task.completed ? "line-through" : ""}`}>
+            <p
+              className={`mt-2 text-sm text-gray-500 text-left ${
+                task.completed ? "line-through" : ""
+              }`}
+            >
               {task.description}
             </p>
           )}

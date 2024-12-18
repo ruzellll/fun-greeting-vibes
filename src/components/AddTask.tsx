@@ -32,7 +32,7 @@ export const AddTask = ({ onAdd }: AddTaskProps) => {
           maxLength={25}
         />
         <div className="text-right text-sm text-gray-500">
-          {title.length}/25 characters
+          {title.length}/25
         </div>
       </div>
       <div className="space-y-2">
@@ -44,7 +44,7 @@ export const AddTask = ({ onAdd }: AddTaskProps) => {
           maxLength={200}
         />
         <div className="text-right text-sm text-gray-500">
-          {description.length}/200 characters
+          {description.length}/200
         </div>
       </div>
       <Button type="submit" className="w-full bg-primary hover:bg-secondary">
