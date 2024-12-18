@@ -9,7 +9,7 @@ CORS(app)
 
 # Ensure the databases directory exists
 DB_DIR = Path('backend/databases')
-DB_DIR.mkdir(exist_ok=True)
+DB_DIR.mkdir(parents=True, exist_ok=True) 
 
 def get_db_connection(device_id):
     """Get a database connection for the specific device"""
